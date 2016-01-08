@@ -44,6 +44,8 @@ public class Token {
     }
 
     public String toString() {
+        if (this.type == TokenType.STRING_LITERAL)
+            return type.name() + "," + value.replace("\"", "\\\"");
         return type.name() + "," + value;
     }
 }
