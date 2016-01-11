@@ -837,7 +837,8 @@ public class Parser {
         if (!inFunctionBody)
             throw new UnexpectedTokenException("return can only appear in function body.");
         AST returnStatement = new AST(ASTType.RETURN_STATEMENT);
-        returnStatement.set(PropType.argument, parseExpression());
+        if (!isPunctuator(";"))
+            returnStatement.set(PropType.argument, parseExpression());
         eatPunctuator(";");
         return returnStatement;
     }
