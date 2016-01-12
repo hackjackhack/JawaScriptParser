@@ -51,6 +51,8 @@ public class Serializer {
             treeMap.put(key, ast.getProps().get(key));
         }
         for (PropType key : treeMap.keySet()) {
+            if (key == PropType.valueType)
+                continue;
             output += ",\"" + key.ordinal() + "\":";
             if (treeMap.get(key) instanceof AST) {
                 output += toJSON(((AST) treeMap.get(key)));

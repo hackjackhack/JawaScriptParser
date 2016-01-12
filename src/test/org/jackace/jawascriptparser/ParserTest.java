@@ -6429,7 +6429,7 @@ SCRIPT_BODY
             ArrayList<Token> tokens = tn.tokenize(program);
             Parser ps = new Parser();
             AST tree = ps.parse(tokens);
-            //System.out.println(Serializer.toString(tree, 0));
+            System.out.println(Serializer.toJSON(tree));
             assertEquals(Serializer.toString(tree, 0).trim(), answer.trim());
         } catch (UnexpectedTokenException e) {
             System.out.println(e.getMessage());
