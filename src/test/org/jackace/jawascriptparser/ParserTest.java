@@ -6436,4 +6436,46 @@ SCRIPT_BODY
             throw e;
         }
     }
+
+    @Test
+    public void testParser11() throws Exception {
+        String program = "/* aaa bbb\nxxx yyy\n*/var x={\nkey:'abc',\n//somecomment\nkey2:'def'\n};";
+        String answer = MultiLineStringLiteral.S(/*
+SCRIPT_BODY
+ statements :[
+  VAR_STATEMENT
+   declarations :[
+    VARIABLE_DECLARATION
+     initialization :
+      OBJECT_EXPRESSION
+       properties :[
+        OBJECT_PROPERTY
+         expr :
+          LITERAL
+           literal : STRING_LITERAL,abc
+           valueType : R
+         key : key
+        OBJECT_PROPERTY
+         expr :
+          LITERAL
+           literal : STRING_LITERAL,def
+           valueType : R
+         key : key2
+       ]
+     varName : x
+   ]
+ ]
+*/);
+        Tokenizer tn = new Tokenizer();
+        try {
+            ArrayList<Token> tokens = tn.tokenize(program);
+            Parser ps = new Parser();
+            AST tree = ps.parse(tokens);
+            System.out.println(Serializer.toString(tree, 0));
+            assertEquals(Serializer.toString(tree, 0).trim(), answer.trim());
+        } catch (UnexpectedTokenException e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
 }

@@ -440,7 +440,7 @@ public class Tokenizer {
                     if (d == '/') {
                         cur_pos += 2;
                         skipSingleLineComment();
-                    } else if (c == '*') {
+                    } else if (d == '*') {
                         cur_pos += 2;
                         skipMultiLineComment();
                     } else
