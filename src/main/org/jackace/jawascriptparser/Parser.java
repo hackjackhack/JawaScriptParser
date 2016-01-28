@@ -178,7 +178,14 @@ public class Parser {
 
     private AST parseObjectProperty() throws EarlyEOFException, UnexpectedTokenException {
         //System.out.println("parseObjectProperty");
-        String key = eatIdentifier();
+        String key;
+        TokenType keyType = peek().type;
+        if (keyType == TokenType.IDENTIFIER)
+            key = eatIdentifier();
+        else if (keyType == TokenType.STRING_LITERAL)
+            key = next().value;
+        else
+            throw new UnexpectedTokenException("Property key must be a string literal or an identifier.");
         eatPunctuator(":");
         AST expr = parseAssignmentExpression();
         AST objectProperty = new AST(ASTType.OBJECT_PROPERTY);

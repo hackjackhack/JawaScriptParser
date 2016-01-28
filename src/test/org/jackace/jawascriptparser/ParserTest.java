@@ -6478,4 +6478,41 @@ SCRIPT_BODY
             throw e;
         }
     }
+
+    @Test
+    public void testParser12() throws Exception {
+        String program = "var o = { \"*\":{}};";
+
+        String answer = MultiLineStringLiteral.S(/*
+SCRIPT_BODY
+ statements :[
+  VAR_STATEMENT
+   declarations :[
+    VARIABLE_DECLARATION
+     initialization :
+      OBJECT_EXPRESSION
+       properties :[
+        OBJECT_PROPERTY
+         expr :
+          OBJECT_EXPRESSION
+           properties :[
+           ]
+         key : *
+       ]
+     varName : o
+   ]
+ ]
+*/);
+        Tokenizer tn = new Tokenizer();
+        try {
+            ArrayList<Token> tokens = tn.tokenize(program);
+            Parser ps = new Parser();
+            AST tree = ps.parse(tokens);
+            System.out.println(Serializer.toString(tree, 0));
+            assertEquals(Serializer.toString(tree, 0).trim(), answer.trim());
+        } catch (UnexpectedTokenException e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
 }
