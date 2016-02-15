@@ -6515,4 +6515,233 @@ SCRIPT_BODY
             throw e;
         }
     }
+
+    @Test
+    public void testParser13() throws Exception {
+        String program = MultiLineStringLiteral.S(/*
+function test() {
+    var a = {'abc':123};
+    var r = '';
+    r += (a.def == null) + '|';
+    r += (a.def != null) + '|';
+    var answer = null;
+    var o = {"def": 111};
+    if (o.abc == null) {
+        answer = o.def;
+        r += answer;
+    }
+    return r;
+}
+        */);
+
+        String answer = MultiLineStringLiteral.S(/*
+SCRIPT_BODY
+ statements :[
+  FUNCTION_DECLARATION
+   body :
+    BLOCK_STATEMENT
+     statements :[
+      VAR_STATEMENT
+       declarations :[
+        VARIABLE_DECLARATION
+         initialization :
+          OBJECT_EXPRESSION
+           properties :[
+            OBJECT_PROPERTY
+             expr :
+              LITERAL
+               literal : NUMERIC_LITERAL,123.0
+               valueType : R
+             key : abc
+           ]
+         varName : a
+       ]
+      VAR_STATEMENT
+       declarations :[
+        VARIABLE_DECLARATION
+         initialization :
+          LITERAL
+           literal : STRING_LITERAL,
+           valueType : R
+         varName : r
+       ]
+      ASSIGNMENT_EXPRESSION
+       left :
+        IDENTIFIER
+         id : r
+         valueType : L
+       op : PUNCTUATOR,+=
+       right :
+        ADDITIVE_EXPRESSION
+         ops :[
+         +
+         ]
+         subExpressions :[
+          EQUALITY_EXPRESSION
+           ops :[
+           ==
+           ]
+           subExpressions :[
+            STATIC_MEMBER_EXPRESSION
+             object :
+              IDENTIFIER
+               id : a
+               valueType : L
+             property :
+              IDENTIFIER
+               id : def
+               valueType : R
+             valueType : L
+            LITERAL
+             literal : NULL,null
+             valueType : R
+           ]
+           valueType : R
+          LITERAL
+           literal : STRING_LITERAL,|
+           valueType : R
+         ]
+         valueType : R
+       valueType : R
+      ASSIGNMENT_EXPRESSION
+       left :
+        IDENTIFIER
+         id : r
+         valueType : L
+       op : PUNCTUATOR,+=
+       right :
+        ADDITIVE_EXPRESSION
+         ops :[
+         +
+         ]
+         subExpressions :[
+          EQUALITY_EXPRESSION
+           ops :[
+           !=
+           ]
+           subExpressions :[
+            STATIC_MEMBER_EXPRESSION
+             object :
+              IDENTIFIER
+               id : a
+               valueType : L
+             property :
+              IDENTIFIER
+               id : def
+               valueType : R
+             valueType : L
+            LITERAL
+             literal : NULL,null
+             valueType : R
+           ]
+           valueType : R
+          LITERAL
+           literal : STRING_LITERAL,|
+           valueType : R
+         ]
+         valueType : R
+       valueType : R
+      VAR_STATEMENT
+       declarations :[
+        VARIABLE_DECLARATION
+         initialization :
+          LITERAL
+           literal : NULL,null
+           valueType : R
+         varName : answer
+       ]
+      VAR_STATEMENT
+       declarations :[
+        VARIABLE_DECLARATION
+         initialization :
+          OBJECT_EXPRESSION
+           properties :[
+            OBJECT_PROPERTY
+             expr :
+              LITERAL
+               literal : NUMERIC_LITERAL,111.0
+               valueType : R
+             key : def
+           ]
+         varName : o
+       ]
+      IF_STATEMENT
+       onTrue :
+        BLOCK_STATEMENT
+         statements :[
+          ASSIGNMENT_EXPRESSION
+           left :
+            IDENTIFIER
+             id : answer
+             valueType : L
+           op : PUNCTUATOR,=
+           right :
+            STATIC_MEMBER_EXPRESSION
+             object :
+              IDENTIFIER
+               id : o
+               valueType : L
+             property :
+              IDENTIFIER
+               id : def
+               valueType : R
+             valueType : L
+           valueType : L
+          ASSIGNMENT_EXPRESSION
+           left :
+            IDENTIFIER
+             id : r
+             valueType : L
+           op : PUNCTUATOR,+=
+           right :
+            IDENTIFIER
+             id : answer
+             valueType : L
+           valueType : R
+         ]
+       test :
+        EQUALITY_EXPRESSION
+         ops :[
+         ==
+         ]
+         subExpressions :[
+          STATIC_MEMBER_EXPRESSION
+           object :
+            IDENTIFIER
+             id : o
+             valueType : L
+           property :
+            IDENTIFIER
+             id : abc
+             valueType : R
+           valueType : L
+          LITERAL
+           literal : NULL,null
+           valueType : R
+         ]
+         valueType : R
+      RETURN_STATEMENT
+       argument :
+        IDENTIFIER
+         id : r
+         valueType : L
+     ]
+   id : test
+   params :[
+   ]
+ ]
+*/);
+        Tokenizer tn = new Tokenizer();
+        try {
+            ArrayList<Token> tokens = tn.tokenize(program);
+            Parser ps = new Parser();
+            AST tree = ps.parse(tokens);
+            System.out.println(Serializer.toJSON(tree));
+            System.out.println(Serializer.toString(tree, 0));
+            assertEquals(Serializer.toString(tree, 0).trim(), answer.trim());
+        } catch (UnexpectedTokenException e) {
+            System.out.println(e.getMessage());
+            throw e;
+        }
+    }
 }
